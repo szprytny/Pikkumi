@@ -1,0 +1,7 @@
+<h1>Pikkumi account verification</h1>
+
+Hi <%= @user.username %>,
+
+Thanks for registering! To confirm your registration click the URL below.
+<br><br>
+<%= @base_url + "/account/verify?username=" + @user.username + "&code=" + @token %>

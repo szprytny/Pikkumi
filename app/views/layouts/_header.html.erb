@@ -1,0 +1,47 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="container">
+    <nav>
+      <div class = "navbar-header">
+        <button type = "button" class = "navbar-toggle" 
+          data-toggle = "collapse" data-target = "#example-navbar-collapse">
+          <span class = "sr-only">Toggle navigation</span>
+          <span class = "icon-bar"></span>
+          <span class = "icon-bar"></span>
+          <span class = "icon-bar"></span>
+        </button>
+      
+        <%= link_to "Pikkumi", root_path, id: "logo" %>
+      </div>
+      <div class = "collapse navbar-collapse" id = "example-navbar-collapse">
+        <% if !signed_in? %>
+          <%= form_for(:session, url: sessions_path, :html => {:class => 'navbar-form navbar-right'}) do |f| %>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+              <%= f.text_field :name, :class => 'form-control' %>                                      
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+              <%= f.password_field :password, :class => 'form-control' %>                                      
+            </div>
+
+            <%= f.submit "Sign in", class: "btn btn-primary" %>
+          <% end %>
+        <% end %>
+        <ul class="nav navbar-nav navbar-left">
+          <li><%= link_to "Home",    root_path %></li>
+          <li><%= link_to "About",    about_path %></li>
+          <li><%= link_to "Contact", contact_path %></li>
+          
+        </ul>
+    
+        <ul class="pull-right">
+          <% if signed_in? %>
+            <li><a href=<%= edit_account_path(current_user) %>><span class="label label-default"><%= "You are logged in as "+current_user.username %></span></a>
+              <%= link_to raw("<button class='btn btn-danger'><i class='glyphicon glyphicon-log-out'></i> Logout</button>"), signout_path, :method => :delete%>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>

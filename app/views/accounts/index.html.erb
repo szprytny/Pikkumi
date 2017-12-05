@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Accounts</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <!--<th>Password encoded</th>-->
+      <!--<th>Password salt</th>-->
+      <th>Email</th>
+      <th>Isverified</th>
+      <!--<th>Profiletype</th>-->
+      <!--<th>Avataruri</th>-->
+      <th class="col-xs-2" colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account.username %></td>
+        <!--<td><%= account.password_encoded %></td>-->
+        <!--<td><%= account.password_salt %></td>-->
+        <td><%= account.email %></td>
+        <td><%= account.isVerified %></td>
+        <!--<td><%#= account.profileType %></td>-->
+        <!--<td><%= account.avatarURI %></td>-->
+        <td><%= button_to 'Show', account, :method => :get, :class => 'btn btn-default'  %></td>
+        <td><%= button_to 'Edit', edit_account_path(account), :method => :get, :class => 'btn btn-info'  %></td>
+        <td><%= button_to 'Destroy', account, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'btn btn-danger' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= button_to 'New Account', new_account_path, :method => :get, :class => 'btn btn-info' %>

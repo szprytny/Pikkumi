@@ -1,0 +1,13 @@
+
+<% if current_user != nil and current_user.is_administrator %>
+
+  <footer class="footer">
+    <nav>
+      <ul>
+        <li><%= link_to "Users",   accounts_path %></li>
+        <li><%= link_to "Profile Types", profile_types_path %></li>
+      </ul>
+    </nav>
+  </footer>
+
+<% end %>

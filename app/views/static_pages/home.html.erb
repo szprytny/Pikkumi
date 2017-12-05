@@ -1,0 +1,12 @@
+<%if flash[:error]!=nil %>
+<div class="alert alert-danger"><%= flash[:error].html_safe %></div>
+<% end %>
+<%if flash[:notice]!=nil %>
+<div class="alert alert-info"><%= flash[:notice].html_safe %></div>
+<% end %>
+<h1>Pikkumi welcomes you</h1>
+<p>feel free to use our site and share your opinions </p>
+<%= @req %>
+<% if current_user != nil and @current_user.is_administrator %>
+    HI ADMIN
+<% end %>

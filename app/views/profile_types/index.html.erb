@@ -1,0 +1,26 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Profile Types</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Typename</th>
+      <th class="col-xs-2" colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @profile_types.each do |profile_type| %>
+      <tr>
+        <td><%= profile_type.typeName %></td>
+        <!--<td><%= link_to 'Show', profile_type %></td>-->
+        <td><%= link_to 'Edit', edit_profile_type_path(profile_type) %></td>
+        <td><%= link_to 'Destroy', profile_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+<%= button_to 'New Profile Type', new_profile_type_path, :method => :get, :class => 'btn btn-info' %>

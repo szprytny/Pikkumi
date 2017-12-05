@@ -1,0 +1,225 @@
+<p id="notice"><%= notice %></p>
+<div class="container">
+  <H1>
+    <%= @account.username %>
+  </H1>
+
+  <H4>
+    <strong>Email:</strong>
+    <%= @account.email %>
+  </H4>
+
+  <p>
+    <strong>Is verified:</strong>
+    <%= @account.isVerified %>
+  </p>
+
+  <!--
+  <p>
+    <strong>Profile type:</strong>
+    <%= @profileType %>
+  </p>
+  -->
+
+  <p>
+    <%= image_tag @account.avatar.url , height: 50 %>
+  </p>
+</div>
+<%= button_to 'Edit', edit_account_path(@account), :method => :get, :class => 'btn btn-info' %> 
+<p>
+  <%= button_to "Back" , {:action => "index", :controller => "accounts"}, :method => :get, :class => "btn-small btn-danger "%>
+</p>
+<div class="container">
+<h3>My Google Maps Demo</h3>
+<div id="map" class="resizable col-md-8"></div>
+
+<ul id="sortable" class="list-group markers col-md-4"></ul>
+</div>
+<script>
+  function initMap() {
+    var poi = {lat: 50.2667025, lng: 18.9435155};
+    var markersView = document.getElementsByClassName('markers')[0]
+    var markers = []
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: poi,
+      mapTypeId:google.maps.MapTypeId.HYBRID
+    });
+    var marker1 = new google.maps.Marker({
+      position: poi,
+      map: map,
+      animation:google.maps.Animation.DROP
+    });
+    addListenersToMarker(marker1)
+    markers.push(marker1)
+    marker1.inEdit = true
+
+    marker1.infowindow = new google.maps.InfoWindow({
+     })
+     marker1.infowindow.open(map, marker1)
+     marker1.infowindow.close()
+
+    function placeMarker(map, location) {
+      var marker = new google.maps.Marker({
+        draggable: true,
+        position: location,
+        map: map,
+        animation:google.maps.Animation.DROP
+      });
+
+      addListenersToMarker(marker)
+      markers.push(marker)
+      marker.inEdit = true
+      generateList()
+    }
+
+    function generateList(){
+      while (markersView.firstChild) {
+        markersView.removeChild(markersView.firstChild);
+      }
+      markers.forEach(function(marker, index) {
+        var li = document.createElement("li")
+        li.className += " list-group-item"
+        li.append(marker.getPosition().lat() + " - " +  marker.getPosition().lng() + " - ")
+        li.dataset.markerId = markers.indexOf(marker);
+        markersView.appendChild(li)
+
+        getLocationName(marker, li.dataset.markerId)
+        $("li[data-marker-id='" + li.dataset.markerId +"']").on("mouseenter", function(event, ui){
+          markers[li.dataset.markerId].setAnimation(google.maps.Animation.BOUNCE)
+        })
+        $("li[data-marker-id='" + li.dataset.markerId +"']").on("mouseleave", function(event, ui){
+          markers[li.dataset.markerId].setAnimation(google.maps.Animation.NONE)
+        })
+        $("li[data-marker-id='" + li.dataset.markerId +"']").on("click", function(event, ui){
+          map.panTo(markers[li.dataset.markerId].getPosition());
+        })
+        $("li[data-marker-id='" + li.dataset.markerId +"']").on("dblclick", function(event, ui){
+          if (!!marker.infowindow){
+            marker.infowindow.close()
+          } 
+          if (marker.inEdit == true){
+            var div = document.createElement("textarea")
+            div.className += "infowindow-content"
+            if (!marker.desc){
+              div.setAttribute("placeholder", "write description here")
+            }
+            else{
+              div.value = marker.desc 
+            }
+            div.dataset.markerId = markers.indexOf(marker);
+
+            var btn = document.createElement("input")
+            btn.className += "btn-infowindow btn-small btn-warning pull-right"
+            btn.setAttribute("type", "button")
+            btn.dataset.markerId = markers.indexOf(marker);
+            btn.setAttribute("value","ok")
+            marker.infowindow = new google.maps.InfoWindow({
+             //content: div.outerHTML + btn.outerHTML
+            })
+            marker.infowindow.setContent(div)
+            marker.infowindow.open(map, marker)
+            div.parentElement.appendChild(btn)
+          }
+          else{
+            var div = document.createElement("div")
+            div.className += "infowindow-content"
+            div.innerHTML = marker.desc
+            div.dataset.markerId = markers.indexOf(marker);
+
+            marker.infowindow = new google.maps.InfoWindow({
+             })
+             marker.infowindow.setContent(div)
+             marker.infowindow.open(map, marker)
+             
+          }
+          $("div[data-marker-id='" + li.dataset.markerId +"']").on("dblclick", function(event, ui){
+            marker.inEdit = true
+            marker.infowindow.close()
+            $("li[data-marker-id='" + li.dataset.markerId +"']").dblclick()
+          })
+          $("input[data-marker-id='" + li.dataset.markerId +"']").on("click", function(event, ui){
+            marker.desc = div.value
+            marker.inEdit = false
+            marker.infowindow.close()
+            $("li[data-marker-id='" + li.dataset.markerId +"']").dblclick()
+          })
+        })
+        
+        $("li[data-marker-id='" + li.dataset.markerId +"']").bind('contextmenu', function(e) {
+          e.preventDefault()
+          var r = confirm("Do you want to remove marker?");
+          if (r == true) {
+            markers[li.dataset.markerId].setMap(null)
+            markers.splice(li.dataset.markerId,1)
+            generateList()
+          }
+        });
+      });
+    }
+
+
+    function addListenersToMarker(marker){
+      google.maps.event.addListener(marker,'click',function() {
+        if (map.getZoom() == 18){
+          map.setZoom(5);
+        }
+        else{
+          map.setZoom(18);
+        }
+        map.setCenter(marker.getPosition());
+      });
+      
+      google.maps.event.addListener(marker,'rightclick',function() {
+        var index = markers.indexOf(marker);
+        markers.splice(index,1)
+        generateList()
+        marker.setMap(null);
+      });
+
+
+      google.maps.event.addListener(marker, "dragend", function(event) { 
+        $("li[data-marker-id='" + markers.indexOf(marker) +"']").html(marker.getPosition().lat() + " - " +  marker.getPosition().lng() + " - ")
+        getLocationName(marker, markers.indexOf(marker))
+      }); 
+
+    }
+    google.maps.event.addListener(map, 'click', function(event) {
+      if (!event.placeId)
+        placeMarker(map, event.latLng);
+    });
+
+    
+  }
+  function getLocationName(marker, id) {    
+      // define lat / long
+      var lat = marker.getPosition().lat();
+      var lng = marker.getPosition().lng();
+      var result = ""
+      $.ajax({
+          type: 'GET',
+          dataType: "json",
+          url: "http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&sensor=false",
+          data: {},
+          success: function(data) {
+            $("li[data-marker-id='" + id +"']").append(data.results[0].formatted_address)
+          },
+          error: function () { return "unknown location" } 
+      }); 
+  }
+  $( function() {
+    $( "#sortable" ).sortable();
+  } );
+</script>
+<style>
+  #map { height: 500px; }
+  .infowindow-content{
+    width : 300px;
+    min-height : 50px;
+    max-height : 150px
+  }
+  [contenteditable=true]:empty:before{
+    content: attr(placeholder);
+    display: block; /* For Firefox */
+  }
+</style>
